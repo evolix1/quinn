@@ -382,7 +382,6 @@ impl ConnectionState<tls::ClientSession> {
     }
 }
 
-
 pub struct PeerData {
     pub cid: ConnectionId,
     pub params: TransportParameters,

@@ -8,7 +8,7 @@ use tls;
 
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, ToSocketAddrs};
 
-use tokio_udp::UdpSocket;
+use tokio::net::UdpSocket;
 
 pub struct Client {
     conn_state: ConnectionState<tls::ClientSession>,
@@ -117,20 +117,19 @@ impl Future for ConnectFuture {
 
 #[cfg(test)]
 mod tests {
-    extern crate tokio;
-    use self::tokio::executor::current_thread::CurrentThread;
     use conn_state::tests::client_conn_state;
     use futures::Future;
     use server::Server;
-    use tls::tests::server_config;
     use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+    use tls::tests::server_config;
+    use tokio::executor::current_thread::CurrentThread;
 
     #[test]
     fn test_client_connect_resolves() {
         let server = Server::new("127.0.0.1", 4433, server_config()).unwrap();
         let connector = super::ConnectFuture::new(
             client_conn_state(),
-            SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 4433)
+            SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 4433),
         ).unwrap();
         let mut exec = CurrentThread::new();
         exec.spawn(server.map_err(|_| ()));
